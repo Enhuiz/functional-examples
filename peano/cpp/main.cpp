@@ -1,5 +1,4 @@
 #include <iostream>
-#include <type_traits>
 
 struct Zero;
 
@@ -22,7 +21,7 @@ struct plus<N, Successor<M>>
 };
 
 // helpers
-template <int n>
+template <int N, bool Valid = (N >= 0)>
 struct int_to_natural;
 
 template <>
@@ -31,11 +30,16 @@ struct int_to_natural<0>
     using type = Zero;
 };
 
-template <int n>
-struct int_to_natural
+template <int N>
+struct int_to_natural<N, true>
 {
-    static_assert(n >= 0, "A Natural number must be a non-negative Integer.");
-    using type = Successor<typename int_to_natural<n - 1>::type>;
+    using type = Successor<typename int_to_natural<N - 1>::type>;
+};
+
+template <int N>
+struct int_to_natural<N, false>
+{
+    static_assert(N >= 0, "A Natural number must be a non-negative Integer.");
 };
 
 template <typename N>
