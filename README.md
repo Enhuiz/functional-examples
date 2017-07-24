@@ -1,2 +1,2 @@
-# functional-examples
-functional programming with Haskell and C++ TMP
+# tmp-examples
+C++ TMP Examples.
