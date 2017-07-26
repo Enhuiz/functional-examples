@@ -56,5 +56,51 @@ struct isspace
 {
     static constexpr bool value = C == ' ' || C == '\n' || C == '\r';
 };
+
+template <typename First, typename Second>
+struct Pair
+{
+    using type = Pair;
+    using first = First;
+    using second = Second;
+};
+
+template <template <Char C> class Pred, typename S>
+struct span
+{
+    template <typename Acc, typename Cs>
+    struct spanImpl;
+
+    template <typename Acc>
+    struct spanImpl<Acc, Empty>
+    {
+        using type = Pair<Acc, Empty>;
+    };
+
+    template <typename Acc, Char C, typename Cs>
+    struct spanImpl<Acc, CharCons<C, Cs>>
+    {
+        template <typename T>
+        struct branchTrue
+        {
+            using type = Pair<CharCons<C, typename T::type::first>, typename T::type::second>;
+        };
+
+        template <typename T>
+        struct branchFalse
+        {
+            using type = typename T::type;
+        };
+
+        using branch = typename conditional<
+            Pred<C>::value,
+            branchTrue<spanImpl<Acc, Cs>>,
+            branchFalse<Pair<Acc, CharCons<C, Cs>>>>::type;
+
+        using type = typename branch::type;
+    };
+
+    using type = typename spanImpl<Empty, S>::type;
+};
 }
 #endif
