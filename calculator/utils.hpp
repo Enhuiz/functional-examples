@@ -57,6 +57,12 @@ struct isspace
     static constexpr bool value = C == ' ' || C == '\n' || C == '\r';
 };
 
+template <Char C>
+struct isalphanum
+{
+    static constexpr bool value = isalpha<C>::value || isdigit<C>::value;
+};
+
 template <typename First, typename Second>
 struct Pair
 {

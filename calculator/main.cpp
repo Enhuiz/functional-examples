@@ -2,7 +2,7 @@
 #include <typeinfo>
 #include "lexer.hpp"
 
-constexpr char a[] = "12#";
+constexpr char a[] = "12+3";
 constexpr char b[] = "141223";
 
 int main()
@@ -20,6 +20,6 @@ int main()
     auto num = read<typename parse_string<b>::type>::value;
     cout << num << endl;
 
-    // using tokens = typename tokenize<s>::type;
-    // cout << typeid(tokens).name() << endl;
+    using tokens = typename tokenize<s>::type;
+    cout << typeid(tokens).name() << endl;
 }

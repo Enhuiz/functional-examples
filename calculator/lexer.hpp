@@ -107,13 +107,19 @@ struct tokenize<CharCons<C, Cs>>
 template <Char C, typename Cs>
 struct number_token
 {
-    using type = number_token;
+    using Str = typename span<isdigit, Cs>::type::first;
+    using Cs_ = typename span<isdigit, Cs>::type::second;
+
+    using type = TokenCons<TokNum<read<CharCons<C, Str>>::value>, typename tokenize<Cs_>::type>;
 };
 
 template <Char C, typename Cs>
 struct ident_token
 {
-    using type = ident_token;
+    using Str = typename span<isalphanum, Cs>::type::first;
+    using Cs_ = typename span<isalphanum, Cs>::type::second;
+
+    using type = TokenCons<TokIdent<CharCons<C, Str>>, typename tokenize<Cs_>::type>;
 };
 }
 
