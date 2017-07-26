@@ -25,53 +25,95 @@ struct TokIdent;
 template <Integer X>
 struct TokNum;
 
-template <typename... T>
-struct Tokens
+template <typename Tok, typename Tail>
+struct TokenCons
 {
-    using type = Tokens;
 };
 
-template <typename S, typename... T>
+template <typename S>
 struct tokenize;
 
-template <typename... T>
-struct tokenize<String<>, T...> : Tokens<T...>
+template <Char C, typename Cs>
+struct number_token;
+
+template <Char C, typename Cs>
+struct ident_token;
+
+template <>
+struct tokenize<Empty>
 {
+    using type = Empty;
 };
 
-template <Char... CS, typename... T>
-struct tokenize<String<'+', CS...>, T...> : tokenize<String<CS...>, T..., TokOp<Plus>>
+template <typename Cs>
+struct tokenize<CharCons<'+', Cs>>
 {
+    using type = TokenCons<TokOp<Plus>, typename tokenize<Cs>::type>;
 };
 
-template <Char... CS, typename... T>
-struct tokenize<String<'-', CS...>, T...> : tokenize<String<CS...>, T..., TokOp<Minus>>
+template <typename Cs>
+struct tokenize<CharCons<'-', Cs>>
 {
+    using type = TokenCons<TokOp<Minus>, typename tokenize<Cs>::type>;
 };
 
-template <Char... CS, typename... T>
-struct tokenize<String<'*', CS...>, T...> : tokenize<String<CS...>, T..., TokOp<Times>>
+template <typename Cs>
+struct tokenize<CharCons<'*', Cs>>
 {
+    using type = TokenCons<TokOp<Times>, typename tokenize<Cs>::type>;
 };
 
-template <Char... CS, typename... T>
-struct tokenize<String<'/', CS...>, T...> : tokenize<String<CS...>, T..., TokOp<Div>>
+template <typename Cs>
+struct tokenize<CharCons<'/', Cs>>
 {
+    using type = TokenCons<TokOp<Div>, typename tokenize<Cs>::type>;
 };
 
-template <Char... CS, typename... T>
-struct tokenize<String<'=', CS...>, T...> : tokenize<String<CS...>, T..., TokAssign>
+template <typename Cs>
+struct tokenize<CharCons<'=', Cs>>
 {
+    using type = TokenCons<TokAssign, typename tokenize<Cs>::type>;
 };
 
-template <Char... CS, typename... T>
-struct tokenize<String<'(', CS...>, T...> : tokenize<String<CS...>, T..., TokLParen>
+template <typename Cs>
+struct tokenize<CharCons<'(', Cs>>
 {
+    using type = TokenCons<TokLParen, typename tokenize<Cs>::type>;
 };
 
-template <Char... CS, typename... T>
-struct tokenize<String<')', CS...>, T...> : tokenize<String<CS...>, T..., TokRParen>
+template <typename Cs>
+struct tokenize<CharCons<')', Cs>>
 {
+    using type = TokenCons<TokRParen, typename tokenize<Cs>::type>;
+};
+
+template <Char C, typename Cs>
+struct tokenize<CharCons<C, Cs>>
+{
+    using branch = typename conditional<
+        isdigit<C>::value,
+        number_token<C, Cs>,
+        typename conditional<
+            isalpha<C>::value,
+            ident_token<C, Cs>,
+            typename conditional<
+                isspace<C>::value,
+                tokenize<Cs>,
+                Empty>::type>::type>::type;
+
+    using type = typename branch::type;
+};
+
+template <Char C, typename Cs>
+struct number_token
+{
+    using type = number_token;
+};
+
+template <Char C, typename Cs>
+struct ident_token
+{
+    using type = ident_token;
 };
 }
 

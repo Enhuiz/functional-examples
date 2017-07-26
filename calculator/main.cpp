@@ -2,7 +2,7 @@
 #include <typeinfo>
 #include "lexer.hpp"
 
-constexpr char a[] = "+()+-*/";
+constexpr char a[] = "12#";
 constexpr char b[] = "$$$";
 
 int main()
@@ -12,6 +12,9 @@ int main()
 
     using s = typename parse_string<a>::type;
     cout << typeid(s).name() << endl;
+
+    // using sp = span<IsDigit, s>;
+    // cout << typeid(sp).name() << endl;
 
     using tokens = typename tokenize<s>::type;
     cout << typeid(tokens).name() << endl;
