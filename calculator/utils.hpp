@@ -102,5 +102,20 @@ struct span
 
     using type = typename spanImpl<Empty, S>::type;
 };
+
+template <typename S, Integer Result = 0>
+struct read;
+
+template <Char C, typename Cs, Integer Result>
+struct read<CharCons<C, Cs>, Result>
+{
+    static constexpr Integer value = read<Cs, Result * 10 + (C - '0')>::value;
+};
+
+template <Integer Result>
+struct read<Empty, Result>
+{
+    static constexpr Integer value = Result;
+};
 }
 #endif
